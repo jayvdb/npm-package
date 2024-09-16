@@ -4,6 +4,7 @@ description = "A simple client for fetching metadata from the npm package"
 version = "0.2.0"
 edition = "2021"
 license = "MIT"
+repository = "https://github.com/TheLarkInn/npm-package"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
