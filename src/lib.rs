@@ -11,12 +11,12 @@ pub struct NpmPackage {
     pub _id: String,
     pub _rev: String,
     pub name: String,
-    pub description: String,
+    pub description: Option<String>,
     #[serde(rename = "dist-tags")]
     pub dist_tags: HashMap<String, String>,
     pub versions: HashMap<String, NpmPackageVersion>,
     pub time: HashMap<String, String>,
-    pub author: NpmPackageAuthor,
+    pub author: Option<NpmPackageAuthor>,
     pub repository: Option<NpmPackageRepository>,
     pub readme: Option<String>,
 }
@@ -25,24 +25,26 @@ pub struct NpmPackage {
 pub struct NpmPackageVersion {
     pub name: String,
     pub version: String,
-    pub homepage: String,
+    pub homepage: Option<String>,
     pub repository: Option<NpmPackageRepository>,
     pub dependencies: Option<HashMap<String, String>>,
     #[serde(alias = "devDependencies")]
     pub dev_dependencies: Option<HashMap<String, String>>,
+    #[serde(default = "HashMap::new")]
     pub scripts: HashMap<String, String>,
-    pub author: NpmPackageAuthor,
-    pub license: Option<String>,
+    pub author: Option<NpmPackageAuthor>,
+    pub license: Option<NpmLicense>,
     pub readme: Option<String>,
     #[serde(alias = "readmeFilename")]
     pub readme_filename: Option<String>,
     pub _id: String,
-    pub description: String,
+    pub description: Option<String>,
     pub dist: NpmPackageVersionDist,
     #[serde(alias = "_npmVersion")]
     pub _npm_version: Option<String>,
     #[serde(alias = "_npmUser")]
     pub _npm_user: Option<NpmPackageAuthor>,
+    #[serde(default = "Vec::new")]
     pub maintainers: Vec<NpmPackageAuthor>,
 }
 
@@ -54,13 +56,40 @@ pub struct NpmPackageVersionDist {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct NpmPackageRepository {
+#[serde(untagged)]
+pub enum NpmLicense {
+    Raw(String),
+    Structured(NpmLicenseFields),
+}
+
+#[derive(Debug, Deserialize)]
+pub struct NpmLicenseFields {
     pub r#type: String,
     pub url: String,
 }
 
 #[derive(Debug, Deserialize)]
-pub struct NpmPackageAuthor {
+#[serde(untagged)]
+pub enum NpmPackageRepository {
+    Raw(String),
+    Structured(NpmPackageRepositoryFields),
+}
+
+#[derive(Debug, Deserialize)]
+pub struct NpmPackageRepositoryFields {
+    pub r#type: String,
+    pub url: String,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(untagged)]
+pub enum NpmPackageAuthor {
+    Raw(String),
+    Structured(NpmPackageAuthorFields),
+}
+
+#[derive(Debug, Deserialize)]
+pub struct NpmPackageAuthorFields {
     pub name: Option<String>,
     pub email: Option<String>,
     pub url: Option<String>,

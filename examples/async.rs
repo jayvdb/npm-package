@@ -8,6 +8,6 @@ async fn main() {
 
     println!(
         "Description of is-wsl from the npm registry: {}",
-        is_wsl_package.description
+        is_wsl_package.description.unwrap()
     );
 }
