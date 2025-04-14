@@ -77,6 +77,7 @@ pub enum NpmPackageRepository {
 
 #[derive(Debug, Deserialize)]
 pub struct NpmPackageRepositoryFields {
+    #[serde(default)] // yargs-parser needs this.
     pub r#type: String,
     pub url: String,
 }
@@ -141,6 +142,9 @@ impl AsyncNpmClient {
 #[cfg(test)]
 mod tests {
     use crate::SyncNpmClient;
+    use assert_matches::assert_matches;
+
+    use super::*;
 
     #[test]
     fn test_sync_get_name() {
@@ -183,6 +187,30 @@ mod tests {
             package.versions["5.0.0"]._npm_version,
             Some("6.14.8".to_string())
         );
+    }
+
+    #[test]
+    fn test_npm_repository_structured() {
+        let client = SyncNpmClient::new();
+        let package = client.get("yargs-parser").unwrap();
+
+        assert_matches!(
+            package.repository,
+            Some(NpmPackageRepository::Structured(_))
+        );
+
+        let mut none_count = 0;
+        for version in package.versions.values() {
+            if version.repository.is_none() {
+                none_count += 1;
+                continue;
+            }
+            assert_matches!(
+                version.repository,
+                Some(NpmPackageRepository::Structured(_))
+            );
+        }
+        assert_eq!(none_count, 1);
     }
 
     #[test]
