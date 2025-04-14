@@ -49,6 +49,27 @@ pub struct NpmPackageVersion {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct LocalPackageVersion {
+    pub name: String,
+    pub version: String,
+    pub homepage: Option<String>,
+    pub repository: Option<NpmPackageRepository>,
+    pub dependencies: Option<HashMap<String, String>>,
+    #[serde(alias = "devDependencies")]
+    pub dev_dependencies: Option<HashMap<String, String>>,
+    #[serde(default = "HashMap::new")]
+    pub scripts: HashMap<String, String>,
+    pub author: Option<NpmPackageAuthor>,
+    pub license: Option<NpmLicense>,
+    pub readme: Option<String>,
+    #[serde(alias = "readmeFilename")]
+    pub readme_filename: Option<String>,
+    pub description: Option<String>,
+    #[serde(default = "Vec::new")]
+    pub maintainers: Vec<NpmPackageAuthor>,
+}
+
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub struct NpmPackageVersionDist {
     pub shasum: String,
